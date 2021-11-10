@@ -1,20 +1,22 @@
 # SwapVerse
 
-This project investigates [CLOB](https://en.wikipedia.org/wiki/Central_limit_order_book) using [Solidity](https://docs.soliditylang.org/) with the ultimate purpose to execute on [Hedera](https://hedera.com/).
+This project investigates [CLOB](https://en.wikipedia.org/wiki/Central_limit_order_book) using [Solidity](https://docs.soliditylang.org/) with the ultimate purpose to execute on [Hedera](https://hedera.com/).  
+
+If you like what you see, please donate some BTC to bc1qf3gsvfk0yp9fvw0k8xvq7a8dk80rqw0apcy8kx or some ETH to 0x7e674C55f954d31B2f86F69d7A58B2BCe84Cf6b4
 
 ## Intro
 
-A [CLOB FIFO](https://en.wikipedia.org/wiki/Order_matching_system) is a typical order matching algorithm for centralised exchanges.
+A [CLOB FIFO](https://en.wikipedia.org/wiki/Order_matching_system) is a typical order matching algorithm for centralized exchanges.
 
-[While order book mechanisms are the dominant medium
-of exchange of electronic assets in traditional finance [13], they are challenging to use within
-a smart contract environment. The size of the state needed by an order book to represent
-the set of outstanding orders (e.g., passive liquidity) is large and extremely costly in the
-smart contract environment, where users must pay for space and compute power utilized](https://web.stanford.edu/~guillean/papers/uniswap_analysis.pdf) (An analysis of Uniswap markets).
+"While order book mechanisms are the dominant medium of exchange of electronic assets in traditional finance [13], they are challenging to use within a smart contract environment. 
+The size of the state needed by an order book to represent the set of outstanding orders (e.g., passive liquidity) is large and extremely costly in the
+smart contract environment, where users must pay for space and compute power utilized" ([An analysis of Uniswap markets](https://web.stanford.edu/~guillean/papers/uniswap_analysis.pdf)).
 
-The above is the reason why we do not see decentralised CLOB in existing DEXs... until [Solana](https://blog.saber.so/solana-dex-ecosystem-exploring-amms-and-clobs-ceafb78353fe) and [Hedera](https://hedera.com/hh-ieee_coins_paper-200516.pdf).
+The above is the reason why we do not see decentralised CLOB in existing DEXs... until [Solana](https://blog.saber.so/solana-dex-ecosystem-exploring-amms-and-clobs-ceafb78353fe)'s [Serum](https://solana.com/ecosystem/serum) and [Hedera](https://hedera.com/hh-ieee_coins_paper-200516.pdf).
 
-The below is my personal investigation of CLOBs in Solidity to be executed on Hedera while learning to code [Solidity](https://docs.soliditylang.org/), [Hardhat](https://hardhat.org/), [Remix](http://remix.ethereum.org/), [Hedera](https://docs.hedera.com/guides/docs/sdks/smart-contracts/create-a-smart-contract) and [VS Studio](https://code.visualstudio.com/)
+The below is my personal investigation of CLOBs in Solidity to be executed on Hedera while learning to code in [Solidity](https://docs.soliditylang.org/) using [Hardhat](https://hardhat.org/), [Remix](http://remix.ethereum.org/), [Hedera](https://docs.hedera.com/guides/docs/sdks/smart-contracts/create-a-smart-contract), [web3j](https://docs.web3j.io/) and [VS Studio](https://code.visualstudio.com/).
+
+I definitely should have taken the [blue pill](https://en.wikipedia.org/wiki/Red_pill_and_blue_pill) on this one!
 
 ### Notes about the code
 The code is most likely buggy and not so well designed with a sub-optimal implementation. 
@@ -81,9 +83,19 @@ Buy | Sell
 .   | 50 at 632
 50 @ 631 | .
 80 @ 630 | .
-200 @ 1629 | .
+200 @ 629 | .
 
-The functions that deal with order placement are matching are:
+If there is now another Sell for 100 lots at 631, the new CLOB would be:
+
+Buy | Sell
+--- | ---
+.   | 500 at 633
+.   | 50 at 632
+.   | 50 at 631
+80 @ 630 | .
+200 @ 629 | .
+
+The functions that deal with order placement and matching are:
 
 ```solidity
 function place_market_order(bool is_buy, uint256 size) public tradingAllowed returns (uint256)
@@ -94,8 +106,65 @@ function process_matched_order(uint256 orderId, uint256[] storage matched_ids, b
 
 ## Settlement
 I believe settlement represents the crux of the matter due [settlement risk](https://www.investopedia.com/terms/s/settlementrisk.asp), i.e., "the possibility that one or more parties will fail to deliver on the terms of a contract at the agreed-upon time".  
-When a trade happens (See process_trade), assets must be transferred between parties.
-... 
+When a trade happens (See process_trade), assets must be transferred between parties.  
 
-### TODO
-Proper calculation for sizes
+There are a few options to settle, each of them have merits and demerits: there is a the [Uniswap](https://academy.binance.com/en/articles/what-is-uniswap-and-how-does-it-work) model for example that has proved to be successful, but is it the one that institutions would be conformable with (coin provenance for [KYC](https://en.wikipedia.org/wiki/Know_your_customer) & [AML](https://www.investopedia.com/terms/a/aml.asp), compliance with the [FATF-16](https://www.fatf-gafi.org/media/fatf/documents/recommendations/Updated-Guidance-VA-VASP.pdf) rule)?
+
+Another model would be that once a TradeEvent has been issued, custodians would notify participants for settlement (manually or via API, or ideally do it on the behalf-of).
+
+For learning purposes, I went for the ERC20 approve functions which allows a participant to delegate transfer capability up to a certain amount to another address - like a smart contract:
+
+```js
+await _link_token.connect(_addr1).approve(_stl.address, 100);
+```
+Allowing the transfer from the smart contract:
+
+```solidity
+token_1.transferFrom(adr1, adr2, amount1);
+```
+
+## Testing
+
+I use three testing methods: Hardhat, Remix and the Hedera test network.
+
+### With Hardhat
+
+Please check all the .js files in the repo. 
+
+### With Remix
+
+Copy and paste the SwapVerse.sol in [Remix](http://remix.ethereum.org/)
+
+## Hedera
+
+Hedera allows the deployment of Solidity smart contracts using [Besu EVM](https://www.hyperledger.org/use/besu) using the [Hashgraph](https://en.wikipedia.org/wiki/Hashgraph) consensus algorithm which gives blazing fast settlement finality.  
+Solidity smart contracts therefore run "as-is" without any modification!
+
+[Java code samples](https://github.com/hashgraph/hedera-sdk-java/tree/main/examples/src/main/java) are here to help.
+
+Use the Java code to deploy various contracts and transfer tokens (and update Accounts.java accordingly), in order:
+
+- Execute CreateTokenContract which creates an ERC20 token (TJToken) with a 5_000_000 initial supply
+- Execute TransferTokens to transfer tokens to Accounts 1 & 2
+- Execute ApproveTransfer to approve the smart contract to spend tokens on behalf of the Accounts 1 & 2
+- Execute SwapVerse first using the OPERATOR ID account to enable trading and add participants (Accounts 1 & 2)
+- Execute SwapVerse as Account 1 and 2 to place orders and get trades
+
+# Conclusion
+
+## At this time of writing, on Nov 10th 2021:
+
+- Smart contracts on Hedera are not for prime usage for several reasons: No access to logs, no access to events (emit), no tool chain to develop and debug with ease
+ (When the Solidity code works on Hardhat and Remix, you'd expect it to "work" on Hedera out-of-the box but the development experience is not great, 300000 gas limit)
+- Avoid recursive functions in Solidity - a prefer changing states to functional-style programming
+- Hedera has a great future for smart contracts but they need to get things right from day 1, focusing on developer productivity.
+
+## Next Steps
+- To modify SwapVers.sol and make it more efficient (gas-wise) so that I do not hit the 300000 gas limit
+
+## References
+- [ethers.io](https://docs.ethers.io/v5/single-page/)
+- [hardhat](https://hardhat.org/tutorial/testing-contracts.html)
+- [security best practices](https://secureum.substack.com/p/security-pitfalls-and-best-practices-101)
+- [OMS](https://en.wikipedia.org/wiki/Order_matching_system)
+- [Dragon Glass](https://testnet.dragonglass.me/hedera/home)
