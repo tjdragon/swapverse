@@ -154,6 +154,7 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 
 ## At this time of writing, on Nov 10th 2021:
 
+- Code for this version is in [v1](https://github.com/tjdragon/swapverse/tree/main/v1/tj/hedera)
 - Smart contracts on Hedera are not for prime usage for several reasons: No access to logs, no access to events (emit), no tool chain to develop and debug with ease
  (When the Solidity code works on Hardhat and Remix, you'd expect it to "work" on Hedera out-of-the box but the development experience is not great, 300000 gas limit)
 - Avoid recursive functions in Solidity - a prefer changing states to functional-style programming
@@ -161,6 +162,7 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 
 ## Next Steps
 - To modify SwapVers.sol and make it more efficient (gas-wise) so that I do not hit the 300000 gas limit
+- Will upload and update this page in v2
 
 ## References
 - [ethers.io](https://docs.ethers.io/v5/single-page/)
