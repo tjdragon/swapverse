@@ -24,7 +24,7 @@ That is not the point.
 It is about exploring the ease of coding of decentralised CLOBs and governance.
 
 ## Design choices
-[SwapVerse.sol](https://github.com/tjdragon/swapverse/blob/main/SwapVerse.sol) allows Participants to add Limit Orders and Market Orders.
+[SwapVerse.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse.sol) allows Participants to add Limit Orders and Market Orders.
 The contract is designed to swap a given crypto ERC20 pair - hence the constructor takes two parameters which are the addresses of the ERC20 contracts.
 
 ```solidity
