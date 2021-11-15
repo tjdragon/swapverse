@@ -21,11 +21,14 @@ I definitely should have taken the [blue pill](https://en.wikipedia.org/wiki/Red
 ### Notes about the code
 The code is most likely buggy and not so well designed with a sub-optimal implementation. 
 That is not the point.
-It is about exploring the ease of coding of decentralised CLOBs and governance.
+It is about exploring the ease of coding of decentralized CLOBs and governance.
 
 ## Design choices
-[SwapVerse.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse.sol) allows Participants to add Limit Orders and Market Orders.
+Version 1 of [SwapVerse.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse.sol) allows Participants to add Limit Orders and Market Orders.
 The contract is designed to swap a given crypto ERC20 pair - hence the constructor takes two parameters which are the addresses of the ERC20 contracts.
+
+Version 2 (Updated on Nov, 15th 2021) [SwapVerse2.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse2.sol) is a simpler implementation, without recursion.
+SwapVerse2.sol has only a subset of the operations from SwapVerse1.sol for now.
 
 ```solidity
 constructor(address token_address_1, address token_address_2)
@@ -138,7 +141,7 @@ Copy and paste the SwapVerse.sol in [Remix](http://remix.ethereum.org/)
 ## Hedera
 
 Hedera allows the deployment of Solidity smart contracts using [Besu EVM](https://www.hyperledger.org/use/besu) using the [Hashgraph](https://en.wikipedia.org/wiki/Hashgraph) consensus algorithm which gives blazing fast settlement finality.  
-Solidity smart contracts therefore run "as-is" without any modification!
+Solidity smart contracts therefore run "as-is" without any modification! 
 
 [Java code samples](https://github.com/hashgraph/hedera-sdk-java/tree/main/examples/src/main/java) are here to help.
 
@@ -161,8 +164,7 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 - Hedera has a great future for smart contracts but they need to get things right from day 1, focusing on developer productivity.
 
 ## Next Steps
-- To modify SwapVers.sol and make it more efficient (gas-wise) so that I do not hit the 300000 gas limit
-- Will upload and update this page in v2
+- To modify SwapVers.sol and make it more efficient (gas-wise) so that I do not hit the 300000 gas limit (Update on Nov, 15h 2021: See [SwapVerse2.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse2.sol))
 
 ## References
 - [ethers.io](https://docs.ethers.io/v5/single-page/)
