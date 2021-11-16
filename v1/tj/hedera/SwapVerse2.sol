@@ -2,6 +2,19 @@
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
+/**
+  _____                __      __                
+  / ____|               \ \    / /                
+ | (_____      ____ _ _ _\ \  / /__ _ __ ___  ___ 
+  \___ \ \ /\ / / _` | '_ \ \/ / _ \ '__/ __|/ _ \
+  ____) \ V  V / (_| | |_) \  /  __/ |  \__ \  __/
+ |_____/ \_/\_/ \__,_| .__/ \/ \___|_|  |___/\___|
+                     | |                          
+                     |_|     
+
+            tjdragonhash@gmail.com                     
+ */
+
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
@@ -14,16 +27,11 @@ struct Order {
     uint256 price; // Price (0 for Market Orders)
 }
 
-/**
- * SwapVerse2 .sol- New implementation, learning from SwapVerse.sol 
- * Simpler, not recursion
- * https://en.wikipedia.org/wiki/Security_interest
- * https://www.realized1031.com/glossary/bankruptcy-remote 
- */
 contract SwapVerse2 {
     // List of events supported
     event OrderPlacedEvent(Order order);
     event OrderUpdatedEvent(Order order);
+    event OrderDeletedEvent(Order order);
     event MatchedOrderSameOwnerStoppedEvent(string order, string matched_order);
     event TradeEvent(Order order, Order matched_order);
     event SettlementInstruction(address from, address to, address token1, uint256 amount1, address token2, uint256 amount2);
@@ -31,12 +39,13 @@ contract SwapVerse2 {
     // Owner of this smart contract
     address private _owner;
     // List of external order ids
-    mapping(string => bool) _ext_order_ids;
+    mapping(string => bool) private _ext_order_ids;
     // Internal order id
     uint256 private _order_id = 1;
     // List of orders placed
     mapping(uint256 => Order) private _orders;
     mapping(uint256 => string) private _order_id_int_ext_mapping;
+    mapping(string => uint256) private _order_id_ext_int_mapping;
     // Mapping of Price to Array of order ids
     mapping(uint256 => uint256[]) private _buy_list;
     // Sorted on insert list of prices: 12, 10, 8
@@ -134,6 +143,8 @@ contract SwapVerse2 {
             store_order(new_order);
             emit OrderPlacedEvent(new_order);
         }
+
+        clean_up();
     } // function place_limit_order
 
     function process_trade(address matched_owner, address order_owner, bool is_buy, uint256 size, uint256 price) private {
@@ -161,12 +172,85 @@ contract SwapVerse2 {
     function store_order(Order memory order) private {
         console.log("[SV2] store_order %s %s", order.id_int, order.id_ext);
         _order_id_int_ext_mapping[_order_id] = order.id_ext;
+        _order_id_ext_int_mapping[ order.id_ext] = _order_id;
         _orders[order.id_int] = order;
 
         add_price(order.price, order.is_buy);
         mapping(uint256 => uint256[]) storage list = list_by_verb(order.is_buy);
         list[order.price].push(order.id_int);
     }
+
+    function delete_order(string memory ext_order_id) public {
+        require(_ext_order_ids[ext_order_id], "No such order id");
+        uint256 int_order_id = _order_id_ext_int_mapping[ext_order_id];
+        Order storage order = _orders[int_order_id];
+        require(msg.sender == order.owner, "Must own the order to delete it");
+
+        bool found = false;
+        for(uint i = 0; i < _buy_prices.length; i++) {
+            uint256 buy_price = _buy_prices[i];
+            uint256[] storage buy_list = _buy_list[buy_price];
+           
+            for(uint j = 0; j < buy_list.length; j++) {
+                if (buy_list[j] == int_order_id) {
+                    delete _buy_list[buy_price][j];
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+
+        if (found) {
+            delete _orders[int_order_id];
+            emit OrderDeletedEvent(order);
+            return;
+        }
+
+        found = false;
+        for(uint i = 0; i < _sell_prices.length; i++) {
+            uint256 sell_price = _sell_prices[i];
+            uint256[] storage sell_list = _buy_list[sell_price];
+           
+            for(uint j = 0; j < sell_list.length; j++) {
+                if (sell_list[j] == int_order_id) {
+                    delete _sell_list[sell_price][j];
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+
+        if (found) {
+            delete _orders[int_order_id];
+            emit OrderDeletedEvent(order);
+            return;
+        }
+    }
+
+    function clean_up() private {
+       for(uint i = 0; i < _buy_prices.length; i++) {
+           uint256 buy_price = _buy_prices[i];
+           uint256[] storage buy_list = _buy_list[buy_price];
+           if (buy_list.length == 0) {
+               delete _buy_list[buy_price];
+               delete _buy_prices[i];
+           }
+       }
+       for(uint i = 0; i < _sell_prices.length; i++) {
+           uint256 sell_price = _sell_prices[i];
+           uint256[] storage sell_list = _sell_list[sell_price];
+           if (sell_list.length == 0) {
+               delete _sell_list[sell_price];
+               delete _sell_prices[i];
+           }
+       }
+   }
 
     function list_by_verb(bool is_buy) private view returns (mapping(uint256 => uint256[]) storage) {
         if (is_buy) {
@@ -306,7 +390,6 @@ contract SwapVerse2 {
         } // for
     }
 
-    
     function print_clob() public view {
         console.log("> BEGIN CLOB <");
         console.log(" Buy Orders");
