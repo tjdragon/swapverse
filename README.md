@@ -4,6 +4,8 @@ This project investigates [CLOB](https://en.wikipedia.org/wiki/Central_limit_ord
 
 If you like what you see, please donate some BTC to bc1qf3gsvfk0yp9fvw0k8xvq7a8dk80rqw0apcy8kx or some ETH to 0xcDE1EcaFCa4B4c7A6902c648CD01db52d8c943F3
 
+tjdragonhash@gmail.com
+
 ## Intro
 
 A [CLOB FIFO](https://en.wikipedia.org/wiki/Order_matching_system) is a typical order matching algorithm for centralized exchanges.
