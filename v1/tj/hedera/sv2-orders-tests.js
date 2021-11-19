@@ -3,6 +3,8 @@ const { ethers } = require("hardhat");
 
 const hbar_token_supply = 10000000;
 const btc_token_supply  = 10000000;
+const token_transfer_amnt = 3000000;
+const token_approved_supply = 2500000;
 
 describe("SwapVerse II Limit Orders Tests 1", function () {
   let _owner;
@@ -28,6 +30,22 @@ describe("SwapVerse II Limit Orders Tests 1", function () {
     const SwapVerse2 = await ethers.getContractFactory("SwapVerse2");
     _swap_verse_2 = await SwapVerse2.deploy(_hbar_token.address, _btc_token.address);
     await _swap_verse_2.deployed();
+
+    await _hbar_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _hbar_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
   });
 
   it("Add One Buy Order", async function () {
@@ -105,6 +123,22 @@ describe("SwapVerse II Limit Orders Tests 2", function () {
     const SwapVerse2 = await ethers.getContractFactory("SwapVerse2");
     _swap_verse_2 = await SwapVerse2.deploy(_hbar_token.address, _btc_token.address);
     await _swap_verse_2.deployed();
+
+    await _hbar_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _hbar_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
   });
 
   it("Full Trade on two orders at same price", async function () {
@@ -148,6 +182,22 @@ describe("SwapVerse II Limit Orders Tests 3", function () {
     const SwapVerse2 = await ethers.getContractFactory("SwapVerse2");
     _swap_verse_2 = await SwapVerse2.deploy(_hbar_token.address, _btc_token.address);
     await _swap_verse_2.deployed();
+
+    await _hbar_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _hbar_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
   });
 
   it("Over trade", async function () {
@@ -189,6 +239,22 @@ describe("SwapVerse II Trade Tests 4", function () {
     const SwapVerse2 = await ethers.getContractFactory("SwapVerse2");
     _swap_verse_2 = await SwapVerse2.deploy(_hbar_token.address, _btc_token.address);
     await _swap_verse_2.deployed();
+
+    await _hbar_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _hbar_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
   });
 
   it("Simple Trade 1", async function () {
@@ -242,6 +308,22 @@ describe("SwapVerse II Trade Tests 5", function () {
     const SwapVerse2 = await ethers.getContractFactory("SwapVerse2");
     _swap_verse_2 = await SwapVerse2.deploy(_hbar_token.address, _btc_token.address);
     await _swap_verse_2.deployed();
+
+    await _hbar_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _hbar_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _hbar_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _hbar_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr2.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr2.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr2).approve(_swap_verse_2.address, token_approved_supply);
+
+    await _btc_token.transfer(_addr1.address, token_transfer_amnt);
+    expect(await _btc_token.balanceOf(_addr1.address)).to.equal(token_transfer_amnt);
+    await _btc_token.connect(_addr1).approve(_swap_verse_2.address, token_approved_supply);
   });
 
   it("Simple Trade X", async function () {
@@ -260,6 +342,15 @@ describe("SwapVerse II Trade Tests 5", function () {
   });
 
   it("Simple Trade Y", async function () {
+    adr1_hbar = await _hbar_token.balanceOf(_addr1.address);
+    adr2_hbar = await _hbar_token.balanceOf(_addr2.address);
+    adr1_btc = await _btc_token.balanceOf(_addr1.address);
+    adr2_btc = await _btc_token.balanceOf(_addr2.address);
+    console.log("adr1_hbar = ", adr1_hbar.toString())
+    console.log("adr2_hbar = ", adr2_hbar.toString())
+    console.log("adr1_btc = ", adr1_btc.toString())
+    console.log("adr2_btc = ", adr2_btc.toString())
+
     await expect(_swap_verse_2.connect(_addr1).place_limit_order("tj-uid-c", true, 1500, 650)).
       to.emit(_swap_verse_2, 'OrderPlacedEvent').
       withArgs([3, "tj-uid-c", _addr1.address, true, 1500, 650]);
@@ -270,5 +361,14 @@ describe("SwapVerse II Trade Tests 5", function () {
       withArgs([3, "tj-uid-c", _addr1.address, true, 1000, 650]);
 
     await _swap_verse_2.print_clob();
+
+    adr1_hbar = await _hbar_token.balanceOf(_addr1.address);
+    adr2_hbar = await _hbar_token.balanceOf(_addr2.address);
+    adr1_btc = await _btc_token.balanceOf(_addr1.address);
+    adr2_btc = await _btc_token.balanceOf(_addr2.address);
+    console.log("adr1_hbar = ", adr1_hbar.toString())
+    console.log("adr2_hbar = ", adr2_hbar.toString())
+    console.log("adr1_btc = ", adr1_btc.toString())
+    console.log("adr2_btc = ", adr2_btc.toString())
   });
 });

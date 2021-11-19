@@ -166,10 +166,22 @@ contract SwapVerse2 {
             // console.log("[SV2] BO %s transfers %s token_1 to %s", matched_owner, size, order_owner);
             // console.log("[SV2] BO %s transfers %s token_2 to %s", order_owner, amount_to_transfer, matched_owner);
             emit SettlementInstruction(matched_owner, order_owner, _token_address_1, size, _token_address_2, amount_to_transfer);
+            require(_token_1.allowance(matched_owner, address(this)) >= size, "{Buy} Not enough funds for settlement");
+            require(_token_2.allowance(order_owner, address(this)) >= amount_to_transfer, "{Buy} Not enough funds for settlement");
+            bool sent = _token_1.transferFrom(matched_owner, order_owner, size);
+            require(sent, "Transfer 1 failed");
+            sent = _token_2.transferFrom(order_owner, matched_owner, amount_to_transfer);
+            require(sent, "Transfer 2 failed");
         } else {
             // console.log("[SV2] SO %s transfers %s token_2 to %s", matched_owner, amount_to_transfer, order_owner);
             // console.log("[SV2] SO %s transfers %s token_1 to %s", order_owner, size, matched_owner);
             emit SettlementInstruction(matched_owner, order_owner, _token_address_2, amount_to_transfer, _token_address_1, size);
+            require(_token_1.allowance(matched_owner, address(this)) >= size, "{Buy} Not enough funds for settlement");
+            require(_token_2.allowance(order_owner, address(this)) >= amount_to_transfer, "{Buy} Not enough funds for settlement");
+            bool sent = _token_1.transferFrom(matched_owner, order_owner, amount_to_transfer);
+            require(sent, "Transfer 1 failed");
+            sent = _token_2.transferFrom(order_owner, matched_owner, size);
+            require(sent, "Transfer 2 failed");
         }
     }
 
