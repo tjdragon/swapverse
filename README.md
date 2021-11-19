@@ -167,7 +167,7 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 [it is happening](https://www.youtube.com/watch?v=bXvKwlu_N9s&list=WL&index=1&t=1830s)
 
 ## Update on Nov, 19th 2021
-Many thanks to (Greg Scullard)[https://www.linkedin.com/in/greg-scullard/] to help me sort the gas limitation on the network by providing the steps to execute against a
+Many thanks to [Greg Scullard](https://www.linkedin.com/in/greg-scullard/) to help me sort the gas limitation on the network by providing the steps to execute against a
 local Hedera environment and spending valuable time to point me in the right direction!  
 
 I am pleased to announce that the code find in the repo does work on Ethereum as well as Hedera! One Solidity code, Two Targets.
