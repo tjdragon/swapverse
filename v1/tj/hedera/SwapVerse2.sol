@@ -12,22 +12,33 @@ pragma experimental ABIEncoderV2;
                      | |                          
                      |_|     
 
-            tjdragonhash@gmail.com                     
+            tjdragonhash@gmail.com       
+ *
+ * Web3J Section: Generate ABI and BIN (https://github.com/web3j/web3j/issues/1547)
+ *  solcjs --base-path . --include-path node_modules --optimize --bin --abi -o abis contracts/SwapVerse2.sol       
+ *                GENERATE JAVA CODE
+ *  C:\Users\tj\TOOLS\web3j-1.4.1\bin\web3j.bat generate solidity -b contracts_SwapVerse2_sol_SwapVerse2.bin -a contracts_SwapVerse2_sol_SwapVerse2.abi -o C:\Users\tj\PERSO\DEV\swapverse\web3j\src\main\java -p tj.swapverse
+ *  
+ * RINKEBY TJTOKEN: https://rinkeby.etherscan.io/token/0x00a495a8fbd7cdaea2567b753a686b61bf0f52be
+ *         RJTOKEN: https://rinkeby.etherscan.io/address/0x1643c5d67ae89782d453635406a80b9f216c9eca    
+ *         SWAPVERSE2: https://rinkeby.etherscan.io/address/0x6c22d7dde760071bb6484af41cb220db825bf757
+ * ROPSTEN: TJTOK: https://ropsten.etherscan.io/address/0x86810cef0473bc08220cf94697a801300815cbf4
+ *          RJTOK: https://ropsten.etherscan.io/address/0xc7a6ba984f785b6958e1bf034e062df3d56b8da4
+ *          SV2: https://ropsten.etherscan.io/address/0xe620c416ba1a65531c312822185d156b95a878c0
  */
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "hardhat/console.sol";
-
-struct Order {
-    uint256 id_int; // Internal Order Id
-    string id_ext; // External Order Id
-    address owner; // Owner
-    bool is_buy; // Is this a Buy or Sell 
-    uint256 size; // Size
-    uint256 price; // Price (0 for Market Orders)
-}
+// import "hardhat/console.sol";
 
 contract SwapVerse2 {
+    struct Order {
+        uint256 id_int; // Internal Order Id
+        string id_ext; // External Order Id
+        address owner; // Owner
+        bool is_buy; // Is this a Buy or Sell 
+        uint256 size; // Size
+        uint256 price; // Price (0 for Market Orders)
+    }
     // List of events supported
     event OrderPlacedEvent(Order order);
     event OrderUpdatedEvent(Order order);
@@ -75,7 +86,7 @@ contract SwapVerse2 {
         _token_address_2 = token_address_2;
         _token_2 = IERC20(_token_address_2);
 
-        console.log("Created SwapVerse2 with tokens %s and %s", token_address_1, token_address_2);
+        // console.log("Created SwapVerse2 with tokens %s and %s", token_address_1, token_address_2);
     }
 
     /**
@@ -97,7 +108,7 @@ contract SwapVerse2 {
             // No opposite order at that price, we can just place it or
             // There are opposite orders but not at that price
             // Crosses are handled by the validate method
-            console.log("[SV2] No opposite order and/or at that pice, placing order");
+            // console.log("[SV2] No opposite order and/or at that pice, placing order");
             store_order(order);
             emit OrderPlacedEvent(order);
             return;
@@ -110,27 +121,27 @@ contract SwapVerse2 {
             moids[i] = matched_orders_ids[i];
         }
 
-        console.log("[SV2] Match scenario. Nb matched orders: %s", moids.length);
+        // console.log("[SV2] Match scenario. Nb matched orders: %s", moids.length);
         uint256 size_left = amount;
         for(uint i = 0; i < moids.length && size_left > 0; i++) {
             Order storage matched_order = _orders[moids[i]];
-            console.log("[SV2] Processing matched order %s", matched_order.id_ext);
             if (msg.sender == matched_order.owner) {
+                // console.log("[SV2] Same owner. MatchedOrderSameOwnerStoppedEvent raised.");
                 emit MatchedOrderSameOwnerStoppedEvent(ext_order_id, matched_order.id_ext);
                 return;
             }
 
             emit TradeEvent(order, matched_order);
-            console.log("[SV2] Order %s <> Matched Order %s", order.id_ext, matched_order.id_ext);
+            // console.log("[SV2] Order %s <> Matched Order %s - size_left = %s", order.id_ext, matched_order.id_ext, size_left);
             if (size_left >= matched_order.size) {
-                console.log("[SV2] %s >= %s", size_left,  matched_order.size);
+                // console.log("[SV2] %s >= %s", size_left,  matched_order.size);
                 remove_order(matched_order.id_int, matched_order.is_buy);
                 size_left = size_left - matched_order.size;
-                console.log("[SV2] new size left %s", size_left);
+                // console.log("[SV2] new size left %s", size_left);
             } else {
-                console.log("[SV2] size_left = 0");
-                size_left;
+                // console.log("[SV2] size_left = 0");
                 Order memory updated_order = Order(matched_order.id_int, matched_order.id_ext, matched_order.owner, matched_order.is_buy, matched_order.size - size_left, matched_order.price);
+                size_left = 0;
                 _orders[matched_order.id_int] = updated_order;
                 emit OrderUpdatedEvent(updated_order);
             }
@@ -138,7 +149,7 @@ contract SwapVerse2 {
         } // For all matched orders
 
         if (size_left > 0) {
-            console.log("[SV2] size_left > 0. Creating and storing new order");
+            // console.log("[SV2] size_left > 0. Creating and storing new order");
             Order memory new_order = create_order(msg.sender, ext_order_id, is_buy, size_left, price);
             store_order(new_order);
             emit OrderPlacedEvent(new_order);
@@ -148,29 +159,29 @@ contract SwapVerse2 {
     } // function place_limit_order
 
     function process_trade(address matched_owner, address order_owner, bool is_buy, uint256 size, uint256 price) private {
-        console.log("[SV2] process_trade %s %s size = %s", matched_owner, order_owner, size);
+        // console.log("[SV2] process_trade %s %s size = %s", matched_owner, order_owner, size);
 
         uint256 amount_to_transfer = size * price;
         if (is_buy) {
-            console.log("[SV2] BO %s transfers %s token_1 to %s", matched_owner, size, order_owner);
-            console.log("[SV2] BO %s transfers %s token_2 to %s", order_owner, amount_to_transfer, matched_owner);
+            // console.log("[SV2] BO %s transfers %s token_1 to %s", matched_owner, size, order_owner);
+            // console.log("[SV2] BO %s transfers %s token_2 to %s", order_owner, amount_to_transfer, matched_owner);
             emit SettlementInstruction(matched_owner, order_owner, _token_address_1, size, _token_address_2, amount_to_transfer);
         } else {
-            console.log("[SV2] SO %s transfers %s token_2 to %s", matched_owner, amount_to_transfer, order_owner);
-            console.log("[SV2] SO %s transfers %s token_1 to %s", order_owner, size, matched_owner);
+            // console.log("[SV2] SO %s transfers %s token_2 to %s", matched_owner, amount_to_transfer, order_owner);
+            // console.log("[SV2] SO %s transfers %s token_1 to %s", order_owner, size, matched_owner);
             emit SettlementInstruction(matched_owner, order_owner, _token_address_2, amount_to_transfer, _token_address_1, size);
         }
     }
 
     function create_order(address owner, string memory ext_order_id, bool is_buy, uint256 amount, uint256 price) private returns (Order memory) {
-        console.log("[SV2] create_order %s %s", _order_id, ext_order_id);
+        // console.log("[SV2] create_order %s %s", _order_id, ext_order_id);
         Order memory order = Order(_order_id, ext_order_id, owner, is_buy, amount, price);
         _order_id = _order_id + 1;
         return order;
     }
 
     function store_order(Order memory order) private {
-        console.log("[SV2] store_order %s %s", order.id_int, order.id_ext);
+        // console.log("[SV2] store_order %s %s", order.id_int, order.id_ext);
         _order_id_int_ext_mapping[_order_id] = order.id_ext;
         _order_id_ext_int_mapping[ order.id_ext] = _order_id;
         _orders[order.id_int] = order;
@@ -339,7 +350,7 @@ contract SwapVerse2 {
     }
 
     function remove_order(uint256 order_id, bool is_buy) private {
-        console.log("[SV2] remove_order %s %s", order_id, is_buy);
+        // console.log("[SV2] remove_order %s %s", order_id, is_buy);
         if (is_buy) {
             remove_buy_order(order_id);
         } else {
@@ -348,7 +359,7 @@ contract SwapVerse2 {
     }
 
     function remove_buy_order(uint256 order_id) private {
-        console.log("[SV2] remove_buy_order %s", order_id);
+        // console.log("[SV2] remove_buy_order %s", order_id);
         for(uint i = 0; i < _buy_prices.length; i++) {
            uint256 buy_price = _buy_prices[i];
            uint256[] storage buy_list = _buy_list[buy_price];
@@ -391,31 +402,52 @@ contract SwapVerse2 {
     }
 
     function print_clob() public view {
-        console.log("> BEGIN CLOB <");
-        console.log(" Buy Orders");
+        // console.log("> BEGIN CLOB <");
+        // console.log(" Buy Orders");
         for(uint i = 0; i < _buy_prices.length; i++) {
             uint256[] storage order_ids = _buy_list[_buy_prices[i]];
             if (order_ids.length > 0)
-                console.log("  For price %s", _buy_prices[i]);
+                // console.log("  For price %s", _buy_prices[i]);
             for(uint j = 0; j < order_ids.length; j++) {
                 Order storage lo = _orders[order_ids[j]];
                 if (lo.price > 0 && lo.size > 0) {
-                    console.log("    Order %s %s @ %s", lo.is_buy, lo.size, lo.price);
+                    // console.log("    Order %s %s @ %s", lo.is_buy, lo.size, lo.price);
                 }
             }
         }
-        console.log(" Sell Orders");
+        // console.log(" Sell Orders");
         for(uint i = 0; i < _sell_prices.length; i++) {
             uint256[] storage order_ids = _sell_list[_sell_prices[i]];
             if (order_ids.length > 0)
-                console.log("  For price %s", _sell_prices[i]);
+                // console.log("  For price %s", _sell_prices[i]);
             for(uint j = 0; j < order_ids.length; j++) {
                 Order storage lo = _orders[order_ids[j]];
                 if (lo.price > 0 && lo.size > 0) {
-                    console.log("    Order %s %s @ %s", lo.is_buy, lo.size, lo.price);
+                    // console.log("    Order %s %s @ %s", lo.is_buy, lo.size, lo.price);
                 }
             }
         }
-        console.log("> END ---- <");
+        // console.log("> END ---- <");
+    }
+
+    function buy_prices() public view returns (uint256[] memory)  {
+        return _buy_prices;
+    }
+
+    function sell_prices() public view returns (uint256[] memory)  {
+        return _sell_prices;
+    }
+
+    function buy_order_ids(uint256 price) public view returns (uint256[] memory) {
+        return _buy_list[price];
+    }
+
+    function sell_order_ids(uint256 price) public view returns (uint256[] memory) {
+        return _sell_list[price];
+    }
+
+    function get_order(uint256 id) public view returns (string memory, address, bool, uint256, uint256) {
+        Order storage lo = _orders[id];
+        return (lo.id_ext, lo.owner, lo.is_buy, lo.price, lo.size);
     }
 }
