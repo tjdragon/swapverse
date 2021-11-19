@@ -12,9 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-public final class CreateTokenContract {
-    private static final String HEDERA_NETWORK = "testnet";
+import static tj.hedera.Accounts.TOKEN_SUPPLY;
 
+public final class CreateTokenContract {
     private CreateTokenContract() {
     }
 
@@ -35,7 +35,7 @@ public final class CreateTokenContract {
         final String byteCodeHex = jsonObject.getAsJsonPrimitive("bytecode").getAsString();
         final byte[] byteCode = byteCodeHex.getBytes(StandardCharsets.UTF_8);
 
-        final Client client = Client.forName(HEDERA_NETWORK);
+        final Client client = HederaClient.CLIENT;
 
         client.setOperator(Accounts.OPERATOR_ID, Accounts.OPERATOR_KEY);
 
@@ -64,9 +64,9 @@ public final class CreateTokenContract {
                 .setGas(100_000_000)
                 .setConstructorParameters(
                         new ContractFunctionParameters()
-                                .addUint256(BigInteger.valueOf(5_000_000L))
-                                .addString("TjLink")
-                                .addString("LINK")
+                                .addUint256(BigInteger.valueOf(TOKEN_SUPPLY))
+                                .addString("HBAR")
+                                .addString("HBAR")
                 )
                 .execute(client);
 

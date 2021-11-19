@@ -38,6 +38,28 @@ public class DecodeHelper {
                     new TypeReference<Address>() {})
     );
 
+    public static final Function ORDER2_TUPLE = new Function("ORDER2_TUPLE",
+            Arrays.asList(),
+            Arrays.asList(
+                    new TypeReference<Utf8String>() {},
+                    new TypeReference<Address>() {},
+                    new TypeReference<Bool>() {},
+                    new TypeReference<Uint256>() {},
+                    new TypeReference<Uint256>() {})
+    );
+
+    public static Order2 toOrder2(final String data) {
+        final List<Type> decodeList = FunctionReturnDecoder.decode(data, ORDER2_TUPLE.getOutputParameters());
+        final Order2 order = new Order2(
+                ((Utf8String)decodeList.get(0)).getValue(),
+                ((Address)decodeList.get(1)).getValue(),
+                ((Bool)decodeList.get(2)).getValue(),
+                ((Uint256)decodeList.get(3)).getValue(),
+                ((Uint256)decodeList.get(4)).getValue()
+        );
+        return order;
+    }
+
     public static BigInteger[] toUint256Array(final String data) {
         final List<BigInteger> array = new LinkedList<>();
         final List<Type> decodeList = FunctionReturnDecoder.decode(data, DYNAMIC_ARRAY_UINT256_FN.getOutputParameters());

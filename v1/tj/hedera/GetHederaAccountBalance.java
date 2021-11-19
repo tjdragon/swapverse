@@ -5,8 +5,7 @@ import com.hedera.hashgraph.sdk.*;
 import java.util.concurrent.TimeoutException;
 
 public final class GetHederaAccountBalance {
-    private static final String HEDERA_NETWORK = "testnet";
-    private static final Client client = Client.forName(HEDERA_NETWORK);
+    private static final Client client = HederaClient.CLIENT;
 
     public static void main(String[] args) throws PrecheckStatusException, TimeoutException {
         System.out.println("OPERATOR_ID balance = " + getBalance(Accounts.OPERATOR_ID));

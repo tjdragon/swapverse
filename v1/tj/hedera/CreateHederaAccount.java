@@ -5,10 +5,8 @@ import com.hedera.hashgraph.sdk.*;
 import java.util.concurrent.TimeoutException;
 
 public class CreateHederaAccount {
-    private static final String HEDERA_NETWORK = "testnet";
-
     public static void main(String[] args) throws TimeoutException, PrecheckStatusException, ReceiptStatusException {
-        final Client client = Client.forName(HEDERA_NETWORK);
+        final Client client = HederaClient.CLIENT;
         client.setOperator(Accounts.OPERATOR_ID, Accounts.OPERATOR_KEY);
 
         // Generate a Ed25519 private, public key pair
