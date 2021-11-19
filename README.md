@@ -163,7 +163,8 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 - Smart contracts on Hedera are not for prime usage for several reasons: No access to logs, no access to events (emit), no tool chain to develop and debug with ease
  (When the Solidity code works on Hardhat and Remix, you'd expect it to "work" on Hedera out-of-the box but the development experience is not great, 300000 gas limit)
 - Avoid recursive functions in Solidity - a prefer changing states to functional-style programming
-- Hedera has a great future for smart contracts but they need to get things right from day 1, focusing on developer productivity.
+- Hedera has a great future for smart contracts but they need to get things right from day 1, focusing on developer productivity..
+[it is happening](https://www.youtube.com/watch?v=bXvKwlu_N9s&list=WL&index=1&t=1830s)
 
 ## Next Steps
 - To modify SwapVers.sol and make it more efficient (gas-wise) so that I do not hit the 300000 gas limit (Update on Nov, 15h 2021: See [SwapVerse2.sol](https://github.com/tjdragon/swapverse/blob/main/v1/tj/hedera/SwapVerse2.sol))
@@ -174,3 +175,5 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 - [security best practices](https://secureum.substack.com/p/security-pitfalls-and-best-practices-101)
 - [OMS](https://en.wikipedia.org/wiki/Order_matching_system)
 - [Dragon Glass](https://testnet.dragonglass.me/hedera/home)
+- [Calling SC from JS](https://ethereum.org/en/developers/tutorials/calling-a-smart-contract-from-javascript/)
+- [Smart Contracts on Hedera](https://www.youtube.com/watch?v=bXvKwlu_N9s&list=WL&index=1&t=1830s) - 18th of Nov
