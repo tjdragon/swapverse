@@ -152,8 +152,52 @@ Use the Java code to deploy various contracts and transfer tokens (and update Ac
 - Execute CreateTokenContract which creates an ERC20 token (TJToken) with a 5_000_000 initial supply
 - Execute TransferTokens to transfer tokens to Accounts 1 & 2
 - Execute ApproveTransfer to approve the smart contract to spend tokens on behalf of the Accounts 1 & 2
-- Execute SwapVerse first using the OPERATOR ID account to enable trading and add participants (Accounts 1 & 2)
-- Execute SwapVerse as Account 1 and 2 to place orders and get trades
+- Execute SwapVerse(2) first using the OPERATOR ID account to enable trading and add participants (Accounts 1 & 2)
+- Execute SwapVerse(2) as Account 1 and 2 to place orders and get trades
+
+### Run Hedera locally
+In order to bypass the current gas restrictions on the Hedera testnet and to improve the development life-cycle, you can run and test against a local version of Hedera.
+Thanks to [Greg Scullard](https://www.linkedin.com/in/greg-scullard/) for the instructions:
+
+#### Clone Repo
+```shell
+git clone --branch v0.19.4 https://github.com/hashgraph/hedera-services.git
+cd hedera-services
+```
+
+#### Update maxGasLimit
+```shell
+nano hedera-node/configuration/compose/bootstrap.properties
+contracts.maxGas=1300000
+```
+
+#### Perform a manual build
+```shell
+nano .env
+TAG=v0.19.4
+REGISTRY_PREFIX=
+```
+then
+```shell
+docker build -t services-node:v0.19.4 .
+```
+
+#### Launch
+```shell
+docker-compose up
+```
+You should see three nodes up and running:
+```shell
+localhost:50213 (node 0.0.3)
+localhost:50214 (node 0.0.4)
+localhost:50215 (node 0.0.5)
+```
+
+#### Use the Genesis Account 0.0.2
+```shell
+Public: 0aa8e21064c61eab86e2a9c164565b4e7a9a4146106e0a6cd03a8c395a110e92
+Private: 91132178e72057a1d7528025956fe39b0b847f200ab59b2fdd367017f3087137
+```
 
 # Conclusion
 
